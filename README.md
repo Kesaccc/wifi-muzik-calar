@@ -40,7 +40,8 @@ Telefon bir **uzaktan kumanda** gibi çalışır, müziği ise **Raspberry Pi (v
 music_player/
 ├── app.py                      # Ana program (sunucu)
 ├── requirements.txt            # Gerekli kütüphaneler
-├── users.json                  # Kullanıcı/şifre (otomatik oluşur)
+├── users.json                  # Kullanıcı/şifre (otomatik oluşur, paylaşılmaz)
+├── login.log                   # Giriş kayıtları (otomatik oluşur, paylaşılmaz)
 ├── templates/
 │   ├── index.html              # Müzik çalar sayfası
 │   ├── login.html              # Giriş sayfası
@@ -67,29 +68,21 @@ python app.py
 ```
 
 **4. Tarayıcıdan aç:**
-- Aynı bilgisayardan: `http://localhost:5000`
-- Başka cihazdan: `http://<BILGISAYAR-IP>:5000`  (IP için: `ipconfig`)
+- Aynı bilgisayardan: `http://localhost:8080`
+- Başka cihazdan: `http://<BILGISAYAR-IP>:8080`  (IP için: `ipconfig`)
 
----
-
-## 🔑 Giriş Bilgileri
-
-| | |
-|--|--|
-| Kullanıcı adı | `admin` |
-| Şifre | `1234` |
-
-Giriş yaptıktan sonra **"Şifre"** butonundan değiştirebilirsin.
-Şifreyi unutursan `users.json` dosyasını sil, tekrar `admin / 1234` olur.
+> İlk çalıştırmada giriş bilgileri otomatik oluşur. Güvenlik için ilk girişten sonra şifreyi **"Şifre"** butonundan değiştirmen önerilir. Giriş bilgileri bu repoda paylaşılmaz.
 
 ---
 
 ## 🔒 Güvenlik Özellikleri
 
 - **Şifre hash'lenir** — SHA-256 ile, düz metin saklanmaz.
-- **Brute-force koruması** — 5 yanlış denemede 1 dakika kilit.
-- **Otomatik çıkış** — Tarayıcı kapanınca oturum biter.
+- **Brute-force koruması** — Aynı IP'den 5 yanlış denemede 1 dakika kilit (IP bazlı, diğer kullanıcılar etkilenmez).
+- **Hareketsizlik zaman aşımı** — 15 dakika işlem yapılmazsa otomatik çıkış.
+- **Giriş kayıtları** — Kim, ne zaman, hangi IP'den giriş yaptı/denedi `login.log`'a kaydedilir (şifre asla kaydedilmez).
 - **Manuel çıkış** — "Çıkış" butonu.
+- **Rastgele secret_key** — Oturum çerezleri güvenli şekilde imzalanır.
 
 ---
 
