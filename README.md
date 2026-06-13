@@ -70,8 +70,7 @@ python app.py
 **4. Tarayıcıdan aç:**
 - Aynı bilgisayardan: `http://localhost:8080`
 - Başka cihazdan: `http://<BILGISAYAR-IP>:8080`  (IP için: `ipconfig`)
-
-> İlk çalıştırmada giriş bilgileri otomatik oluşur. Güvenlik için ilk girişten sonra şifreyi **"Şifre"** butonundan değiştirmen önerilir. Giriş bilgileri bu repoda paylaşılmaz.
+  
 
 **5. Başlangıçta Kullanıcı Adı/Şifre:**
 - Kullanıcı adı : admin
