@@ -96,16 +96,6 @@ python app.py
 
 ---
 
-## ⚠️ Okul Ağında Kullanım
-
-Bazı okul ağları cihazların birbiriyle haberleşmesini engeller (AP/client isolation). Telefondan bağlanılamıyorsa:
-
-> Bilgisayarın kendi hotspot'unu aç, telefonu ona bağla. Böylece okul ağına gerek kalmaz.
-
-**Önemli:** Telefon ve sunucu **aynı ağda** olmalı.
-
----
-
 ## 🍓 Raspberry Pi Notları
 
 **Açılışta otomatik başlat** — `/etc/rc.local` içine `exit 0` üstüne:
