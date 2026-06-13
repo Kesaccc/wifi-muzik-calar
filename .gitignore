@@ -1,6 +1,9 @@
 # Kullanici sifresi - paylasilmamali
 users.json
 
+# Giris kayitlari - paylasilmamali
+login.log
+
 # MP3 dosyalari (telif hakki olabilir)
 static/music/*.mp3
 
