@@ -73,6 +73,11 @@ python app.py
 
 > İlk çalıştırmada giriş bilgileri otomatik oluşur. Güvenlik için ilk girişten sonra şifreyi **"Şifre"** butonundan değiştirmen önerilir. Giriş bilgileri bu repoda paylaşılmaz.
 
+**5. Başlangıçta Kullanıcı Adı/Şifre:**
+- Kullanıcı adı : admin
+- Şifre : 1234
+-Güvenlik için Şifrenizi değiştirmeyi unutmayın
+
 ---
 
 ## 🔒 Güvenlik Özellikleri
