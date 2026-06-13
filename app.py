@@ -56,7 +56,7 @@ def write_log(username, ip, result):
 def load_users():
     if not os.path.exists(USERS_FILE):
         # Ilk acilista varsayilan kullanici
-        default = {'IBMTAL': hash_password('Alanya2025!')}
+        default = {'admin': hash_password('1234')}
         with open(USERS_FILE, 'w') as f:
             json.dump(default, f)
         return default
