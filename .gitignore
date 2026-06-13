@@ -1,0 +1,9 @@
+# Kullanici sifresi - paylasilmamali
+users.json
+
+# MP3 dosyalari (telif hakki olabilir)
+static/music/*.mp3
+
+# Python
+__pycache__/
+*.pyc

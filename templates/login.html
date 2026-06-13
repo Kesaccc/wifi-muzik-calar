@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Giris - Muzik Calar</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0f0f0f;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .box {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 16px;
+      padding: 28px 24px;
+      width: 100%;
+      max-width: 320px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 22px;
+      margin-bottom: 24px;
+      color: #1DB954;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      color: #aaa;
+      margin-bottom: 6px;
+    }
+    input {
+      width: 100%;
+      background: #0f0f0f;
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 12px;
+      color: #fff;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+    input:focus { outline: none; border-color: #1DB954; }
+    button {
+      width: 100%;
+      background: #1DB954;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:hover { background: #17a349; }
+    .error {
+      background: #3a1a1a;
+      border: 1px solid #a33;
+      color: #f88;
+      font-size: 13px;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>Muzik Calar</h1>
+    {% if error %}
+    <div class="error">{{ error }}</div>
+    {% endif %}
+    <form method="POST">
+      <label>Kullanici Adi</label>
+      <input type="text" name="username" required autofocus>
+      <label>Sifre</label>
+      <input type="password" name="password" required>
+      <button type="submit">Giris Yap</button>
+    </form>
+  </div>
+</body>
+</html>

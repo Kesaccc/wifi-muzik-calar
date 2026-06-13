@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Muzik Calar</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0f0f0f;
+      color: #fff;
+      padding: 12px;
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      gap: 8px;
+    }
+    .topbar h1 {
+      font-size: 18px;
+      color: #1DB954;
+    }
+    .topbar .user {
+      font-size: 11px;
+      color: #888;
+    }
+    .topbar .actions {
+      display: flex;
+      gap: 6px;
+    }
+    .topbar a {
+      font-size: 11px;
+      color: #aaa;
+      text-decoration: none;
+      border: 1px solid #444;
+      border-radius: 6px;
+      padding: 5px 8px;
+      white-space: nowrap;
+    }
+    .topbar a:hover { border-color: #1DB954; color: #1DB954; }
+    .song-card {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    .song-card.active { border-color: #1DB954; }
+    .song-name {
+      font-size: 12px;
+      color: #aaa;
+      margin-bottom: 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .player {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .play-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #1DB954;
+      border: none;
+      color: #000;
+      font-size: 12px;
+      cursor: pointer;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .play-btn:hover { background: #17a349; }
+    .time {
+      font-size: 11px;
+      color: #aaa;
+      min-width: 30px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    input[type=range] {
+      flex: 1;
+      min-width: 0;
+      accent-color: #1DB954;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <h1>Muzik Calar</h1>
+    <div class="user">{{ username }}</div>
+  </div>
+  <div class="actions">
+    <a href="/change-password">Sifre</a>
+    <a href="/logout">Cikis</a>
+  </div>
+</div>
+
+{% for song in songs %}
+<div class="song-card" id="card-{{ loop.index }}" data-file="{{ song }}">
+  <div class="song-name">{{ song }}</div>
+  <div class="player">
+    <button class="play-btn" id="btn-{{ loop.index }}" onclick="togglePlay('{{ song }}', {{ loop.index }})">▶</button>
+    <span class="time" id="cur-{{ loop.index }}">0:00</span>
+    <input type="range" min="0" max="300" value="0" step="1"
+           id="seek-{{ loop.index }}"
+           onchange="seekTo('{{ song }}', {{ loop.index }}, this.value)">
+    <span class="time" id="dur-{{ loop.index }}">--:--</span>
+  </div>
+</div>
+{% endfor %}
+
+<script>
+  var currentFile = null;
+  var paused = false;
+  var posInterval = null;
+  var localPos = 0;
+  var currentIdx = null;
+  var durations = {};
+
+  {% for song in songs %}
+  loadDuration('{{ song }}', {{ loop.index }});
+  {% endfor %}
+
+  function loadDuration(filename, idx) {
+    fetch('/api/duration', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({filename: filename})
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      durations[filename] = d.duration;
+      document.getElementById('dur-' + idx).textContent = fmt(d.duration);
+      document.getElementById('seek-' + idx).max = Math.round(d.duration);
+    });
+  }
+
+  function togglePlay(filename, idx) {
+    if (currentFile === filename && !paused) {
+      fetch('/api/pause', {method: 'POST'}).then(function() {
+        paused = true;
+        document.getElementById('btn-' + idx).textContent = '▶';
+      });
+    } else if (currentFile === filename && paused) {
+      fetch('/api/resume', {method: 'POST'}).then(function() {
+        paused = false;
+        document.getElementById('btn-' + idx).textContent = '⏸';
+        startTracking(idx, localPos);
+      });
+    } else {
+      resetAll();
+      playFrom(filename, idx, 0);
+    }
+  }
+
+  function seekTo(filename, idx, seconds) {
+    resetAll();
+    playFrom(filename, idx, parseFloat(seconds));
+  }
+
+  function playFrom(filename, idx, seconds) {
+    fetch('/api/play', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({filename: filename, start_seconds: seconds})
+    })
+    .then(function() {
+      currentFile = filename;
+      currentIdx = idx;
+      paused = false;
+      localPos = seconds;
+      document.querySelectorAll('.song-card').forEach(function(c) { c.classList.remove('active'); });
+      document.getElementById('card-' + idx).classList.add('active');
+      document.getElementById('btn-' + idx).textContent = '⏸';
+      startTracking(idx, seconds);
+    });
+  }
+
+  function startTracking(idx, startPos) {
+    if (posInterval) clearInterval(posInterval);
+    localPos = parseFloat(startPos) || 0;
+
+    posInterval = setInterval(function() {
+      if (!paused) {
+        localPos += 1;
+        document.getElementById('cur-' + idx).textContent = fmt(localPos);
+        document.getElementById('seek-' + idx).value = Math.round(localPos);
+
+        var dur = durations[currentFile] || 0;
+        if (dur > 0 && localPos >= dur) {
+          clearInterval(posInterval);
+          document.getElementById('btn-' + idx).textContent = '▶';
+          document.getElementById('cur-' + idx).textContent = '0:00';
+          document.getElementById('seek-' + idx).value = 0;
+          currentFile = null;
+          currentIdx = null;
+          document.querySelectorAll('.song-card').forEach(function(c) { c.classList.remove('active'); });
+        }
+      }
+    }, 1000);
+  }
+
+  function resetAll() {
+    if (posInterval) clearInterval(posInterval);
+    document.querySelectorAll('.play-btn').forEach(function(b) { b.textContent = '▶'; });
+    document.querySelectorAll('.song-card').forEach(function(c) { c.classList.remove('active'); });
+    currentFile = null;
+    paused = false;
+    localPos = 0;
+    currentIdx = null;
+  }
+
+  function fmt(s) {
+    s = Math.round(s);
+    return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+  }
+</script>
+</body>
+</html>
