@@ -75,8 +75,7 @@ python app.py
 **5. Başlangıçta Kullanıcı Adı/Şifre:**
 - Kullanıcı adı : admin
 - Şifre : 1234
-
--Güvenlik için Şifrenizi değiştirmeyi unutmayın
+>Güvenlik için Şifrenizi değiştirmeyi unutmayın
 
 ---
 
